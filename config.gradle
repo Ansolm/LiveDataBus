@@ -17,7 +17,7 @@ ext {
             'kotlinpoet'               : 'com.squareup:kotlinpoet:1.3.0',
             'kotlinxMetadata'          : 'org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.3.0',
             'autoService'              : 'com.google.auto.service:auto-service:1.0-rc4',
-            'annotationprocessorparser': 'com.ansolm:annotationprocessorparser:0.0.11',
+            'annotationprocessorparser': 'com.github.ansolm:AnnotationProcessorParser:0.0.13',
             'javapoet'                 : 'com.squareup:javapoet:1.13.0',
     ]
 }
