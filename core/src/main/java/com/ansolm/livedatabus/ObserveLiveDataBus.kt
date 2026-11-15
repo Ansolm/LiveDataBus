@@ -1,8 +1,8 @@
-package com.iwdael.livedatabus
+package com.ansolm.livedatabus
 
 /**
- * author : Iwdael
- * e-mail : iwdael@outlook.com
+ * author : Ansolm
+ * e-mail : ansolm@outlook.com
  */
 interface ObserveLiveDataBus<T> {
     fun observe(owner: T): ObserveLiveDataBus<T>

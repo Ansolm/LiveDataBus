@@ -1,21 +1,21 @@
-package com.iwdael.livedatabus.compiler
+package com.ansolm.livedatabus.compiler
 
-import com.iwdael.annotationprocessorparser.Class
-import com.iwdael.livedatabus.annotation.*
-import com.iwdael.livedatabus.compiler.Maker.Companion.TAB
+import com.ansolm.annotationprocessorparser.Class
+import com.ansolm.livedatabus.annotation.*
+import com.ansolm.livedatabus.compiler.Maker.Companion.TAB
 import com.squareup.javapoet.*
 import javax.annotation.processing.Filer
 import javax.lang.model.element.Modifier
 
 /**
- * author : Iwdael
- * e-mail : iwdael@outlook.com
+ * author : Ansolm
+ * e-mail : ansolm@outlook.com
  */
 class LiveDataBusMaker(val clazz: Class) : Maker {
-    override val `package` = clazz.`package`.name
-    override val packageGenerator = "${clazz.`package`.name}.livedatabus"
-    override val className = clazz.name
-    override val classNameGenerator = "${clazz.name}LiveDataBus"
+    override val `package` = clazz.packet.name
+    override val packageGenerator = "${clazz.packet.name}.livedatabus"
+    override val className = clazz.classSimpleName
+    override val classNameGenerator = "${clazz.classSimpleName}LiveDataBus"
 
     data class Tmf(val typeSpec: TypeSpec, val methodSpec: MethodSpec, val fieldSpec: FieldSpec?)
 
@@ -25,12 +25,12 @@ class LiveDataBusMaker(val clazz: Class) : Maker {
         .apply {
             clazz.methods
                 .filter { it.getAnnotation(Observe::class.java) != null }
-                .filter { if (it.parameter.size != 1) throw Exception("${it.owner}.${it.name} can only have one parameter") else true }
+                .filter { if (it.parameter.size != 1) throw Exception("${it.parent.className}.${it.name} can only have one parameter") else true }
                 .forEach {
                     addStatement(
                         CodeBlock.of(
                             "observe${it.name}_${
-                                ClassName.bestGuess(it.parameter.first().type).simpleName()
+                                ClassName.bestGuess(it.parameter.first().className).simpleName()
                             }(owner)"
                         )
                     )
@@ -38,12 +38,12 @@ class LiveDataBusMaker(val clazz: Class) : Maker {
 
             clazz.methods
                 .filter { it.getAnnotation(ObserveSticky::class.java) != null }
-                .filter { if (it.parameter.size != 1) throw Exception("${it.owner}.${it.name} can only have one parameter") else true }
+                .filter { if (it.parameter.size != 1) throw Exception("${it.parent.className}.${it.name} can only have one parameter") else true }
                 .forEach {
                     addStatement(
                         CodeBlock.of(
                             "observe${it.name}_${
-                                ClassName.bestGuess(it.parameter.first().type).simpleName()
+                                ClassName.bestGuess(it.parameter.first().className).simpleName()
                             }(owner)"
                         )
                     )
@@ -51,12 +51,12 @@ class LiveDataBusMaker(val clazz: Class) : Maker {
 
             clazz.methods
                 .filter { it.getAnnotation(ObserveForever::class.java) != null }
-                .filter { if (it.parameter.size != 1) throw Exception("${it.owner}.${it.name} can only have one parameter") else true }
+                .filter { if (it.parameter.size != 1) throw Exception("${it.parent.className}.${it.name} can only have one parameter") else true }
                 .forEach {
                     addStatement(
                         CodeBlock.of(
                             "observe${it.name}_${
-                                ClassName.bestGuess(it.parameter.first().type).simpleName()
+                                ClassName.bestGuess(it.parameter.first().className).simpleName()
                             }(owner)"
                         )
                     )
@@ -64,12 +64,12 @@ class LiveDataBusMaker(val clazz: Class) : Maker {
 
             clazz.methods
                 .filter { it.getAnnotation(ObserveForeverSticky::class.java) != null }
-                .filter { if (it.parameter.size != 1) throw Exception("${it.owner}.${it.name} can only have one parameter") else true }
+                .filter { if (it.parameter.size != 1) throw Exception("${it.parent.className}.${it.name} can only have one parameter") else true }
                 .forEach {
                     addStatement(
                         CodeBlock.of(
                             "observe${it.name}_${
-                                ClassName.bestGuess(it.parameter.first().type).simpleName()
+                                ClassName.bestGuess(it.parameter.first().className).simpleName()
                             }(owner)"
                         )
                     )
@@ -79,7 +79,7 @@ class LiveDataBusMaker(val clazz: Class) : Maker {
         .addModifiers(Modifier.PUBLIC)
         .returns(
             ParameterizedTypeName.get(
-                ClassName.get("com.iwdael.livedatabus", "ObserveLiveDataBus"),
+                ClassName.get("com.ansolm.livedatabus", "ObserveLiveDataBus"),
                 ClassName.get(`package`, className)
             )
         )
@@ -87,14 +87,14 @@ class LiveDataBusMaker(val clazz: Class) : Maker {
 
     private fun observeSticky() = clazz.methods
         .filter { it.getAnnotation(ObserveSticky::class.java) != null }
-        .filter { if (it.parameter.size != 1) throw Exception("${it.owner}.${it.name} can only have one parameter") else true }
+        .filter { if (it.parameter.size != 1) throw Exception("${it.parent.className}.${it.name} can only have one parameter") else true }
         .map {
             val clazz =
                 "Observe${it.name}_${
-                    ClassName.bestGuess(it.parameter.first().type).simpleName()
+                    ClassName.bestGuess(it.parameter.first().className).simpleName()
                 }"
             val method = "observe${it.name}_${
-                ClassName.bestGuess(it.parameter.first().type).simpleName()
+                ClassName.bestGuess(it.parameter.first().className).simpleName()
             }"
             val typeSpec = TypeSpec.classBuilder(clazz)
                 .addSuperinterface(
@@ -103,7 +103,7 @@ class LiveDataBusMaker(val clazz: Class) : Maker {
                             "androidx.lifecycle",
                             "Observer"
                         ),
-                        ClassName.bestGuess(it.parameter.first().type)
+                        ClassName.bestGuess(it.parameter.first().className)
                     )
                 )
                 .addModifiers(Modifier.PRIVATE, Modifier.STATIC)
@@ -124,7 +124,7 @@ class LiveDataBusMaker(val clazz: Class) : Maker {
                     MethodSpec.methodBuilder("onChanged")
                         .addModifiers(Modifier.PUBLIC)
                         .addParameter(
-                            ClassName.bestGuess(it.parameter.first().type),
+                            ClassName.bestGuess(it.parameter.first().className),
                             "it"
                         )
                         .apply {
@@ -159,8 +159,8 @@ class LiveDataBusMaker(val clazz: Class) : Maker {
                     if (annotation.value.isEmpty())
                         addStatement(
                             "\$T.with(\$T.class).observeSticky(owner, new \$T(owner))",
-                            ClassName.get("com.iwdael.livedatabus", "LiveDataBus"),
-                            ClassName.bestGuess(it.parameter.first().type),
+                            ClassName.get("com.ansolm.livedatabus", "LiveDataBus"),
+                            ClassName.bestGuess(it.parameter.first().className),
                             ClassName.get(
                                 "${packageGenerator}.${classNameGenerator}",
                                 clazz
@@ -169,8 +169,8 @@ class LiveDataBusMaker(val clazz: Class) : Maker {
                     else
                         addStatement(
                             "\$T.<\$T>with(\"${annotation.value}\").observeSticky(owner, new \$T(owner))",
-                            ClassName.get("com.iwdael.livedatabus", "LiveDataBus"),
-                            ClassName.bestGuess(it.parameter.first().type),
+                            ClassName.get("com.ansolm.livedatabus", "LiveDataBus"),
+                            ClassName.bestGuess(it.parameter.first().className),
                             ClassName.get(
                                 "${packageGenerator}.${classNameGenerator}",
                                 clazz
@@ -183,14 +183,14 @@ class LiveDataBusMaker(val clazz: Class) : Maker {
 
     private fun observe() = clazz.methods
         .filter { it.getAnnotation(Observe::class.java) != null }
-        .filter { if (it.parameter.size != 1) throw Exception("${it.owner}.${it.name} can only have one parameter") else true }
+        .filter { if (it.parameter.size != 1) throw Exception("${it.parent.className}.${it.name} can only have one parameter") else true }
         .map {
             val clazz =
                 "Observe${it.name}_${
-                    ClassName.bestGuess(it.parameter.first().type).simpleName()
+                    ClassName.bestGuess(it.parameter.first().className).simpleName()
                 }"
             val method = "observe${it.name}_${
-                ClassName.bestGuess(it.parameter.first().type).simpleName()
+                ClassName.bestGuess(it.parameter.first().className).simpleName()
             }"
             val typeSpec = TypeSpec.classBuilder(clazz)
                 .addSuperinterface(
@@ -199,7 +199,7 @@ class LiveDataBusMaker(val clazz: Class) : Maker {
                             "androidx.lifecycle",
                             "Observer"
                         ),
-                        ClassName.bestGuess(it.parameter.first().type)
+                        ClassName.bestGuess(it.parameter.first().className)
                     )
                 )
                 .addModifiers(Modifier.PRIVATE, Modifier.STATIC)
@@ -220,7 +220,7 @@ class LiveDataBusMaker(val clazz: Class) : Maker {
                     MethodSpec.methodBuilder("onChanged")
                         .addModifiers(Modifier.PUBLIC)
                         .addParameter(
-                            ClassName.bestGuess(it.parameter.first().type),
+                            ClassName.bestGuess(it.parameter.first().className),
                             "it"
                         )
                         .apply {
@@ -256,8 +256,8 @@ class LiveDataBusMaker(val clazz: Class) : Maker {
                     if (annotation.value.isEmpty())
                         addStatement(
                             "\$T.with(\$T.class).observe(owner, new \$T(owner))",
-                            ClassName.get("com.iwdael.livedatabus", "LiveDataBus"),
-                            ClassName.bestGuess(it.parameter.first().type),
+                            ClassName.get("com.ansolm.livedatabus", "LiveDataBus"),
+                            ClassName.bestGuess(it.parameter.first().className),
                             ClassName.get(
                                 "${packageGenerator}.${classNameGenerator}",
                                 clazz
@@ -265,8 +265,8 @@ class LiveDataBusMaker(val clazz: Class) : Maker {
                         )
                     else addStatement(
                         "\$T.<\$T>with(\"${annotation.value}\").observe(owner, new \$T(owner))",
-                        ClassName.get("com.iwdael.livedatabus", "LiveDataBus"),
-                        ClassName.bestGuess(it.parameter.first().type),
+                        ClassName.get("com.ansolm.livedatabus", "LiveDataBus"),
+                        ClassName.bestGuess(it.parameter.first().className),
                         ClassName.get(
                             "${packageGenerator}.${classNameGenerator}",
                             clazz
@@ -279,14 +279,14 @@ class LiveDataBusMaker(val clazz: Class) : Maker {
 
     private fun observeForeverSticky() = clazz.methods
         .filter { it.getAnnotation(ObserveForeverSticky::class.java) != null }
-        .filter { if (it.parameter.size != 1) throw Exception("${it.owner}.${it.name} can only have one parameter") else true }
+        .filter { if (it.parameter.size != 1) throw Exception("${it.parent.className}.${it.name} can only have one parameter") else true }
         .map {
             val clazz =
                 "Observe${it.name}_${
-                    ClassName.bestGuess(it.parameter.first().type).simpleName()
+                    ClassName.bestGuess(it.parameter.first().className).simpleName()
                 }"
             val method = "observe${it.name}_${
-                ClassName.bestGuess(it.parameter.first().type).simpleName()
+                ClassName.bestGuess(it.parameter.first().className).simpleName()
             }"
             val typeSpec = TypeSpec.classBuilder(clazz)
                 .addSuperinterface(
@@ -295,7 +295,7 @@ class LiveDataBusMaker(val clazz: Class) : Maker {
                             "androidx.lifecycle",
                             "Observer"
                         ),
-                        ClassName.bestGuess(it.parameter.first().type)
+                        ClassName.bestGuess(it.parameter.first().className)
                     )
                 )
                 .addModifiers(Modifier.PRIVATE, Modifier.STATIC)
@@ -316,7 +316,7 @@ class LiveDataBusMaker(val clazz: Class) : Maker {
                     MethodSpec.methodBuilder("onChanged")
                         .addModifiers(Modifier.PUBLIC)
                         .addParameter(
-                            ClassName.bestGuess(it.parameter.first().type),
+                            ClassName.bestGuess(it.parameter.first().className),
                             "it"
                         )
                         .apply {
@@ -364,14 +364,14 @@ class LiveDataBusMaker(val clazz: Class) : Maker {
                     if (annotation.value.isEmpty())
                         addStatement(
                             "\$T.with(\$T.class).observeForeverSticky(${method})",
-                            ClassName.get("com.iwdael.livedatabus", "LiveDataBus"),
-                            ClassName.bestGuess(it.parameter.first().type),
+                            ClassName.get("com.ansolm.livedatabus", "LiveDataBus"),
+                            ClassName.bestGuess(it.parameter.first().className),
                         )
                     else
                         addStatement(
                             "\$T.<\$T>with(\"${annotation.value}\").observeForeverSticky(${method})",
-                            ClassName.get("com.iwdael.livedatabus", "LiveDataBus"),
-                            ClassName.bestGuess(it.parameter.first().type),
+                            ClassName.get("com.ansolm.livedatabus", "LiveDataBus"),
+                            ClassName.bestGuess(it.parameter.first().className),
                         )
                 }
                 .build()
@@ -380,14 +380,14 @@ class LiveDataBusMaker(val clazz: Class) : Maker {
 
     private fun observeForever() = clazz.methods
         .filter { it.getAnnotation(ObserveForever::class.java) != null }
-        .filter { if (it.parameter.size != 1) throw Exception("${it.owner}.${it.name} can only have one parameter") else true }
+        .filter { if (it.parameter.size != 1) throw Exception("${it.parent.className}.${it.name} can only have one parameter") else true }
         .map {
             val clazz =
                 "Observe${it.name}_${
-                    ClassName.bestGuess(it.parameter.first().type).simpleName()
+                    ClassName.bestGuess(it.parameter.first().className).simpleName()
                 }"
             val method = "observe${it.name}_${
-                ClassName.bestGuess(it.parameter.first().type).simpleName()
+                ClassName.bestGuess(it.parameter.first().className).simpleName()
             }"
             val typeSpec = TypeSpec.classBuilder(clazz)
                 .addSuperinterface(
@@ -396,7 +396,7 @@ class LiveDataBusMaker(val clazz: Class) : Maker {
                             "androidx.lifecycle",
                             "Observer"
                         ),
-                        ClassName.bestGuess(it.parameter.first().type)
+                        ClassName.bestGuess(it.parameter.first().className)
                     )
                 )
                 .addModifiers(Modifier.PRIVATE, Modifier.STATIC)
@@ -417,7 +417,7 @@ class LiveDataBusMaker(val clazz: Class) : Maker {
                     MethodSpec.methodBuilder("onChanged")
                         .addModifiers(Modifier.PUBLIC)
                         .addParameter(
-                            ClassName.bestGuess(it.parameter.first().type),
+                            ClassName.bestGuess(it.parameter.first().className),
                             "it"
                         )
                         .apply {
@@ -462,13 +462,13 @@ class LiveDataBusMaker(val clazz: Class) : Maker {
                     if (annotation.value.isEmpty())
                         addStatement(
                             "\$T.with(\$T.class).observeForever(${method})",
-                            ClassName.get("com.iwdael.livedatabus", "LiveDataBus"),
-                            ClassName.bestGuess(it.parameter.first().type),
+                            ClassName.get("com.ansolm.livedatabus", "LiveDataBus"),
+                            ClassName.bestGuess(it.parameter.first().className),
                         )
                     else addStatement(
                         "\$T.<\$T>with(\"${annotation.value}\").observeForever(${method})",
-                        ClassName.get("com.iwdael.livedatabus", "LiveDataBus"),
-                        ClassName.bestGuess(it.parameter.first().type),
+                        ClassName.get("com.ansolm.livedatabus", "LiveDataBus"),
+                        ClassName.bestGuess(it.parameter.first().className),
                     )
                 }
                 .build()
@@ -481,24 +481,24 @@ class LiveDataBusMaker(val clazz: Class) : Maker {
         .apply {
             clazz.methods
                 .filter { it.getAnnotation(ObserveForeverSticky::class.java) != null }
-                .filter { if (it.parameter.size != 1) throw Exception("${it.owner}.${it.name} can only have one parameter") else true }
+                .filter { if (it.parameter.size != 1) throw Exception("${it.parent.className}.${it.name} can only have one parameter") else true }
                 .forEach {
                     val method = "observe${it.name}_${
-                        ClassName.bestGuess(it.parameter.first().type).simpleName()
+                        ClassName.bestGuess(it.parameter.first().className).simpleName()
                     }"
                     val annotation = it.getAnnotation(ObserveForeverSticky::class.java)!!
                     beginControlFlow(CodeBlock.of("if(${method} != null)"))
                     if (annotation.value.isEmpty())
                         addStatement(
                             "\$T.with(\$T.class).removeObserver(${method})",
-                            ClassName.get("com.iwdael.livedatabus", "LiveDataBus"),
-                            ClassName.bestGuess(it.parameter.first().type)
+                            ClassName.get("com.ansolm.livedatabus", "LiveDataBus"),
+                            ClassName.bestGuess(it.parameter.first().className)
                         )
                     else
                         addStatement(
                             "\$T.<\$T>with(\"${annotation.value}\").removeObserver(${method})",
-                            ClassName.get("com.iwdael.livedatabus", "LiveDataBus"),
-                            ClassName.bestGuess(it.parameter.first().type)
+                            ClassName.get("com.ansolm.livedatabus", "LiveDataBus"),
+                            ClassName.bestGuess(it.parameter.first().className)
                         )
 
                     endControlFlow()
@@ -506,24 +506,24 @@ class LiveDataBusMaker(val clazz: Class) : Maker {
 
             clazz.methods
                 .filter { it.getAnnotation(ObserveForever::class.java) != null }
-                .filter { if (it.parameter.size != 1) throw Exception("${it.owner}.${it.name} can only have one parameter") else true }
+                .filter { if (it.parameter.size != 1) throw Exception("${it.parent.className}.${it.name} can only have one parameter") else true }
                 .forEach {
                     val method = "observe${it.name}_${
-                        ClassName.bestGuess(it.parameter.first().type).simpleName()
+                        ClassName.bestGuess(it.parameter.first().className).simpleName()
                     }"
                     val annotation = it.getAnnotation(ObserveForever::class.java)!!
                     beginControlFlow(CodeBlock.of("if(${method} != null)"))
                     if (annotation.value.isEmpty())
                         addStatement(
                             "\$T.with(\$T.class).removeObserver(${method})",
-                            ClassName.get("com.iwdael.livedatabus", "LiveDataBus"),
-                            ClassName.bestGuess(it.parameter.first().type)
+                            ClassName.get("com.ansolm.livedatabus", "LiveDataBus"),
+                            ClassName.bestGuess(it.parameter.first().className)
                         )
                     else
                         addStatement(
                             "\$T.<\$T>with(\"${annotation.value}\").removeObserver(${method})",
-                            ClassName.get("com.iwdael.livedatabus", "LiveDataBus"),
-                            ClassName.bestGuess(it.parameter.first().type)
+                            ClassName.get("com.ansolm.livedatabus", "LiveDataBus"),
+                            ClassName.bestGuess(it.parameter.first().className)
                         )
                     endControlFlow()
                 }
@@ -539,7 +539,7 @@ class LiveDataBusMaker(val clazz: Class) : Maker {
                     .addModifiers(Modifier.PUBLIC)
                     .addSuperinterface(
                         ParameterizedTypeName.get(
-                            ClassName.get("com.iwdael.livedatabus", "ObserveLiveDataBus"),
+                            ClassName.get("com.ansolm.livedatabus", "ObserveLiveDataBus"),
                             ClassName.get(`package`, className)
                         )
                     )
@@ -571,7 +571,7 @@ class LiveDataBusMaker(val clazz: Class) : Maker {
             )
             .indent(TAB)
             .addStaticImport(
-                ClassName.bestGuess("com.iwdael.livedatabus.LiveDataBusCompatKt"),
+                ClassName.bestGuess("com.ansolm.livedatabus.LiveDataBusCompatKt"),
                 "runOnBackgroundThread"
             )
             .build()

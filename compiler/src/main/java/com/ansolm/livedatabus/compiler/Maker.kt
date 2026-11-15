@@ -1,10 +1,10 @@
-package com.iwdael.livedatabus.compiler
+package com.ansolm.livedatabus.compiler
 
 import javax.annotation.processing.Filer
 
 /**
- * author : Iwdael
- * e-mail : iwdael@outlook.com
+ * author : Ansolm
+ * e-mail : ansolm@outlook.com
  */
 interface Maker {
     companion object {

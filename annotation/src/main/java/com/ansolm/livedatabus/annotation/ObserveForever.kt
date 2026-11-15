@@ -1,6 +1,6 @@
-package com.iwdael.livedatabus.annotation
+package com.ansolm.livedatabus.annotation
 /**
- * author : Iwdael
- * e-mail : iwdael@outlook.com
+ * author : Ansolm
+ * e-mail : ansolm@outlook.com
  */
 annotation class ObserveForever(val value: String = "", val dispatcher: Dispatcher = Dispatcher.Main)

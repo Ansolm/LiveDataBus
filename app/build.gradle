@@ -2,24 +2,23 @@ apply from: './../config.gradle'
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'kotlin-android-extensions'
-
 android {
-    compileSdk buidConfig.compileSdkVersion
+    namespace 'com.ansolm.livedatabus.example'
+    compileSdk = 37
     defaultConfig {
-        applicationId "com.iwdael.livedatabus.example"
-        minSdk buidConfig.minSdkVersion
-        targetSdk buidConfig.targetSdkVersion
+        applicationId "com.ansolm.livedatabus.example"
+        minSdk = 21
+        targetSdk = 37
         versionCode buidConfig.versionCode
         versionName buidConfig.versionName
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = "17"
     }
 }
 

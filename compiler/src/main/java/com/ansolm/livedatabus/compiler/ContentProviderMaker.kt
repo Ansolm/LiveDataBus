@@ -1,17 +1,17 @@
-package com.iwdael.livedatabus.compiler
+package com.ansolm.livedatabus.compiler
 
-import com.iwdael.annotationprocessorparser.Class
+import com.ansolm.annotationprocessorparser.Class
 import com.squareup.javapoet.*
 import javax.annotation.processing.Filer
 import javax.lang.model.element.Modifier
 
 /**
- * author : Iwdael
- * e-mail : iwdael@outlook.com
+ * author : Ansolm
+ * e-mail : ansolm@outlook.com
  */
 class ContentProviderMaker(private val classes: List<Class>) : Maker {
-    override val `package` = "com.iwdael.livedatabus"
-    override val packageGenerator = "com.iwdael.livedatabus"
+    override val `package` = "com.ansolm.livedatabus"
+    override val packageGenerator = "com.ansolm.livedatabus"
     override val className = "LiveDataBusContentProvider"
     override val classNameGenerator = "LiveDataBusContentProvider"
 
@@ -20,7 +20,7 @@ class ContentProviderMaker(private val classes: List<Class>) : Maker {
             ParameterizedTypeName.get(
                 ClassName.get(Map::class.java),
                 ClassName.get(Integer::class.java),
-                ClassName.get("com.iwdael.livedatabus", "ObserveLiveDataBus")
+                ClassName.get("com.ansolm.livedatabus", "ObserveLiveDataBus")
             ),
             "eventCollection"
         )
@@ -33,27 +33,27 @@ class ContentProviderMaker(private val classes: List<Class>) : Maker {
         .methodBuilder("observeLiveDataBus")
         .addModifiers(Modifier.PRIVATE)
         .addParameter(ClassName.get("android.app", "Activity"), "activity")
-        .returns(ClassName.get("com.iwdael.livedatabus", "ObserveLiveDataBus"))
+        .returns(ClassName.get("com.ansolm.livedatabus", "ObserveLiveDataBus"))
         .apply {
             if (classes.isEmpty()) return@apply
             classes.forEachIndexed { index, clazz ->
                 if (index == 0)
                     beginControlFlow(
                         "if (activity instanceof \$T)",
-                        ClassName.get(clazz.`package`.name, clazz.name)
+                        ClassName.get(clazz.packet.name, clazz.classSimpleName)
                     )
                 else
                     nextControlFlow(
                         "else if (activity instanceof \$T)",
-                        ClassName.get(clazz.`package`.name, clazz.name)
+                        ClassName.get(clazz.packet.name, clazz.classSimpleName)
                     )
                 addStatement(
                     "return new \$T().observe((\$T)activity)",
                     ClassName.get(
-                        "${clazz.`package`.name}.livedatabus",
-                        "${clazz.name}LiveDataBus"
+                        "${clazz.packet.name}.livedatabus",
+                        "${clazz.classSimpleName}LiveDataBus"
                     ),
-                    ClassName.get(clazz.`package`.name, clazz.name)
+                    ClassName.get(clazz.packet.name, clazz.classSimpleName)
                 )
             }
             endControlFlow()

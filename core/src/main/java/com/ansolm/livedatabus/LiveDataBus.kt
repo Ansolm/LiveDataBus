@@ -1,4 +1,4 @@
-package com.iwdael.livedatabus
+package com.ansolm.livedatabus
 
 import android.os.Handler
 import android.os.HandlerThread
@@ -6,8 +6,8 @@ import androidx.lifecycle.MutableBusLiveData
 import java.util.HashMap
 
 /**
- * author : Iwdael
- * e-mail : iwdael@outlook.com
+ * author : Ansolm
+ * e-mail : ansolm@outlook.com
  */
 class LiveDataBus {
     private val busMap: MutableMap<Any, Observable<*>> = HashMap()

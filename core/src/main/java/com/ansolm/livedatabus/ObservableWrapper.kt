@@ -1,12 +1,12 @@
-package com.iwdael.livedatabus
+package com.ansolm.livedatabus
 
 import androidx.lifecycle.LifecycleOwner
-import com.iwdael.livedatabus.ObservableWrapper
+import com.ansolm.livedatabus.ObservableWrapper
 import androidx.lifecycle.MutableBusLiveData
 import androidx.lifecycle.Observer
 /**
- * author : Iwdael
- * e-mail : iwdael@outlook.com
+ * author : Ansolm
+ * e-mail : ansolm@outlook.com
  */
 class ObservableWrapper<T>(val liveData: MutableBusLiveData<T>) : Observable<T> {
     override fun observe(owner: LifecycleOwner, observer: Observer<in T>) {

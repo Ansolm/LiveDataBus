@@ -1,16 +1,16 @@
-package com.iwdael.livedatabus.compiler
+package com.ansolm.livedatabus.compiler
 
 import com.google.auto.service.AutoService
-import com.iwdael.annotationprocessorparser.Class
-import com.iwdael.livedatabus.annotation.UseLiveDataBus
+import com.ansolm.annotationprocessorparser.Class
+import com.ansolm.livedatabus.annotation.UseLiveDataBus
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.Processor
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.element.TypeElement
 
 /**
- * author : Iwdael
- * e-mail : iwdael@outlook.com
+ * author : Ansolm
+ * e-mail : ansolm@outlook.com
  */
 @AutoService(Processor::class)
 class AnnotationProcessor : AbstractProcessor() {

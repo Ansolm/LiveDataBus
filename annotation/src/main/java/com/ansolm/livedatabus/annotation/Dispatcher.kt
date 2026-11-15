@@ -1,4 +1,4 @@
-package com.iwdael.livedatabus.annotation
+package com.ansolm.livedatabus.annotation
 
 enum class Dispatcher {
     Main, Background

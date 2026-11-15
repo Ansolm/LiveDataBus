@@ -1,17 +1,18 @@
-package com.iwdael.livedatabus.example
+package com.ansolm.livedatabus.example
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import com.iwdael.livedatabus.LiveDataBus
-import com.iwdael.livedatabus.annotation.*
-import kotlinx.android.synthetic.main.activity_main.*
+import android.widget.TextView
+import com.ansolm.livedatabus.LiveDataBus
+import com.ansolm.livedatabus.annotation.*
 
 @UseLiveDataBus
 class MainKtActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        val tvCenter: TextView = findViewById(R.id.tvCenter)
         LiveDataBus.post("IMG form LiveDataBus")
 //        LiveDataBus.post("dzq", "IMG form STR")
 //        LiveDataBus.post("dzq", "IMG form -------------")

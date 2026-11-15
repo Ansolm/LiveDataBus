@@ -1,4 +1,4 @@
-package com.iwdael.livedatabus.example;
+package com.ansolm.livedatabus.example;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -6,13 +6,13 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.iwdael.livedatabus.LiveDataBus;
-import com.iwdael.livedatabus.annotation.Dispatcher;
-import com.iwdael.livedatabus.annotation.Observe;
-import com.iwdael.livedatabus.annotation.ObserveForever;
-import com.iwdael.livedatabus.annotation.ObserveForeverSticky;
-import com.iwdael.livedatabus.annotation.ObserveSticky;
-import com.iwdael.livedatabus.annotation.UseLiveDataBus;
+import com.ansolm.livedatabus.LiveDataBus;
+import com.ansolm.livedatabus.annotation.Dispatcher;
+import com.ansolm.livedatabus.annotation.Observe;
+import com.ansolm.livedatabus.annotation.ObserveForever;
+import com.ansolm.livedatabus.annotation.ObserveForeverSticky;
+import com.ansolm.livedatabus.annotation.ObserveSticky;
+import com.ansolm.livedatabus.annotation.UseLiveDataBus;
 
 @UseLiveDataBus
 public class MainJavaActivity extends AppCompatActivity {

@@ -8,8 +8,8 @@ import androidx.lifecycle.LiveData
 import java.lang.ref.WeakReference
 import java.util.HashMap
 /**
- * author : Iwdael
- * e-mail : iwdael@outlook.com
+ * author : Ansolm
+ * e-mail : ansolm@outlook.com
  */
 class MutableBusLiveData<T> : MutableLiveData<T>() {
     private val mObserverWrappers: MutableMap<Observer<in T>, ObserverStickyWrapper<T>> = HashMap()
